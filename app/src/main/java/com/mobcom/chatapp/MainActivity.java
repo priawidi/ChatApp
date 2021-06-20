@@ -10,11 +10,19 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.mobcom.chatapp.api.ApiClient;
+import com.mobcom.chatapp.api.ApiInterface;
+import com.mobcom.chatapp.model.RequestNotification;
+import com.mobcom.chatapp.model.SendNotification;
+
+import okhttp3.ResponseBody;
+import retrofit2.Callback;
 
 public class MainActivity extends AppCompatActivity {
 
     private String token, msg;
     private static final String TAG = "MainActivity";
+    private ApiInterface apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,5 +61,28 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+    private void sendNotificationToPartner() {
+
+        SendNotification sendNotification = new SendNotification("check", "i miss you");
+        RequestNotification requestNotificaton = new RequestNotification();
+        requestNotificaton.setSendNotification(sendNotification);
+        //token is id , whom you want to send notification ,
+        requestNotificaton.setToken(token);
+
+        apiService = ApiClient.getClient().create(ApiInterface.class);
+        retrofit2.Call<ResponseBody> responseBodyCall = apiService.sendChatNotification(requestNotificaton);
+
+        responseBodyCall.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(retrofit2.Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                Log.d("kkkk","done");
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
     }
 }
