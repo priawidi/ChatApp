@@ -1,10 +1,10 @@
 package com.mobcom.chatapp.model;
 
-public class SendNotification {
+public class Notification {
 
     private String body,title;
 
-    public SendNotification(String body, String title) {
+    public Notification(String body, String title) {
         this.body = body;
         this.title = title;
     }
