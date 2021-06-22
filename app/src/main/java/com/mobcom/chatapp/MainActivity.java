@@ -35,20 +35,23 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView tv_title, tv_body, tv_token;
     private EditText et_message;
     private ImageButton btn_send;
     public String token = "", msg;
     private String Topics = "Business";
+    private String Topic = "/topics/" + Topics;
     private String DeviceToken1 = "fe01yHY4SPqKgiY5nSucIW:APA91bEiwGGIIOYa00KAJR_EAecJK2gdupuHLPaPppKsb8sKQ7o4cidM_iYQAiFCuBZOibyBa469Ag5bcz1yDv4zgG8lj5-3SPXpQO3YeBiUMgFGu-Hp32hbV4yG15srwUk3_jcLWaKA";
+    private String DeviceToken2 = "dUHxvCJtRRCqJWygL3gHwD:APA91bHqfNTGsURctoauDpYrbAM0eSXnGgx7K_xSUQlmIV0USCoqHYBzgWJi01bWtC-WMbvVRFEX7abiKDKzYyfH2Yu3yKsCSMC3QWmsYzLUgw70ZzVa7P_e_b-FiCxWbMlb9avsfhHC";
     private static final String TAG = "MainActivity";
     private MessageAdapter messageAdapter;
 
-    List<MainModel> mMessage;
+    ArrayList<MainModel> listMessage = new ArrayList<MainModel>();
     RecyclerView recyclerView;
     LinearLayoutManager linearLayoutManager;
+    int position;
 
 
     @Override
@@ -63,8 +66,9 @@ public class MainActivity extends AppCompatActivity {
         btn_send=findViewById(R.id.btn_send);
 
          recyclerView = findViewById(R.id.list_chat);
+
          recyclerView.setHasFixedSize(true);
-         linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+         linearLayoutManager = new LinearLayoutManager(this);
          linearLayoutManager.setStackFromEnd(true);
          recyclerView.setLayoutManager(linearLayoutManager);
 
@@ -78,24 +82,27 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String message = et_message.getText().toString();
                 et_message.setText("");
-                sendNotificationToUser(DeviceToken1, message);
+                sendNotificationToUser(Topic, message);
             }
         });
     }
 
-    private void sendNotificationToUser(String Topics, String message) {
-        mMessage = new ArrayList<>();
-        MainModel mainModel = new MainModel(Topics, new Notification( message, "Ini Title"), new Data("idid"));
+    private void sendNotificationToUser(String Topic, String message) {
+        MainModel mainModel = new MainModel(Topic, new Notification( message, "Ini Title"), new Data("idid"));
 
+        listMessage.add(new MainModel(Topic, new Notification( message, "LOL"),new Data("id")));
+        //messageAdapter = new MessageAdapter(getApplicationContext(), listMessage, new MessageAdapter.Onclick();
+        recyclerView.setAdapter(messageAdapter);
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
         retrofit2.Call<ResponseBody> responseBodyCall = apiService.SendMessage(mainModel);
 
         responseBodyCall.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
                 //tv_token.setText(mainModel.getToken());
-                tv_title.setText(mainModel.getNotification().getTitle());
-                tv_body.setText(mainModel.getNotification().getBody());
+                //tv_title.setText(mainModel.getNotification().getTitle());
+                //tv_body.setText(mainModel.getNotification().getBody());
 
                 Log.d(TAG, "Successfully send notification");
             }
@@ -140,6 +147,11 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
                 });
+
+    }
+
+    @Override
+    public void onClick(View v) {
 
     }
 }

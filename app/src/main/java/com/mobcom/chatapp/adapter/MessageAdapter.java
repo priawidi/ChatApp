@@ -20,34 +20,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     private static final String TAG = "MessageAdapter";
 
-    List<MainModel> mMessage = new ArrayList<>() ;
-
-    public MessageAdapter(List<MainModel> message){
-        this.mMessage = message;
-    }
-
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.message_item, viewGroup, false);
-        ViewHolder viewHolder = new ViewHolder(v);
-        return viewHolder;
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position) {
-
-        viewHolder.getTv_body().setText(mMessage.get(position).getNotification().getBody());
-    }
-
-    @Override
-    public int getItemCount() {
-        return mMessage.size();
-    }
+    private ArrayList<MainModel> listMessage;
 
     public class ViewHolder extends RecyclerView.ViewHolder  {
 
-        public TextView tv_title,tv_body;
+        private final TextView tv_title,tv_body;
         public ViewHolder(View v) {
             super(v);
 
@@ -56,9 +33,38 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
 
         }
-        public TextView getTv_body() {
+
+        public TextView getTextView(){
             return tv_body;
         }
 
     }
+
+    public MessageAdapter(ArrayList<MainModel> listMessage ){
+        this.listMessage = listMessage;
+    }
+
+
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.message_item, viewGroup, false);
+        //ViewHolder viewHolder = new ViewHolder(v);
+        return new ViewHolder(v);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+
+        viewHolder.getTextView().setText(listMessage.get(position).getNotification().getBody());
+        viewHolder.tv_title.setText(listMessage.get(position).getNotification().getTitle());
+    }
+
+    @Override
+    public int getItemCount() {
+        return (listMessage != null) ? listMessage.size() : 0 ;
+    }
+
+
 }

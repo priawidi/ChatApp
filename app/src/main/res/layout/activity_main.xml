@@ -11,7 +11,8 @@
             android:id="@+id/list_chat"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/msg_box"/>
+            android:layout_above="@id/msg_box"
+            tools:listitem="@layout/message_item"/>
 
 
         <RelativeLayout
