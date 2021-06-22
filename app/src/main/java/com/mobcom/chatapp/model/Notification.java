@@ -7,6 +7,7 @@ public class Notification {
     public Notification(String body, String title) {
         this.body = body;
         this.title = title;
+
     }
 
     public String getBody() {
@@ -24,4 +25,6 @@ public class Notification {
     public void setTitle(String title) {
         this.title = title;
     }
+
+
 }
