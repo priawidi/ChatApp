@@ -20,7 +20,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     private static final String TAG = "MessageAdapter";
 
-    private ArrayList<MainModel> listMessage;
+    private ArrayList<String> listMessage;
 
     public class ViewHolder extends RecyclerView.ViewHolder  {
 
@@ -40,7 +40,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     }
 
-    public MessageAdapter(ArrayList<MainModel> listMessage ){
+    public MessageAdapter(ArrayList<String> listMessage ){
         this.listMessage = listMessage;
     }
 
@@ -57,13 +57,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
 
-        viewHolder.getTextView().setText(listMessage.get(position).getNotification().getBody());
-        viewHolder.tv_title.setText(listMessage.get(position).getNotification().getTitle());
+        viewHolder.getTextView().setText(listMessage.get(position));
+        viewHolder.tv_title.setText(listMessage.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return (listMessage != null) ? listMessage.size() : 0 ;
+
+        return listMessage.size();
     }
 
 

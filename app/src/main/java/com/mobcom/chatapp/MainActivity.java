@@ -5,20 +5,31 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+import com.mobcom.chatapp.MyFirebaseMessagingService;
 import com.mobcom.chatapp.adapter.MessageAdapter;
 import com.mobcom.chatapp.api.ApiClient;
 import com.mobcom.chatapp.api.ApiInterface;
@@ -48,9 +59,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = "MainActivity";
     private MessageAdapter messageAdapter;
 
-    ArrayList<MainModel> listMessage = new ArrayList<MainModel>();
+    ArrayList<String> listMessage = new ArrayList<>();
+
+    MyFirebaseMessagingService myFirebaseMessagingService;
+    ArrayAdapter<String> arrayAdapter;
     RecyclerView recyclerView;
     LinearLayoutManager linearLayoutManager;
+    ListView listView;
     int position;
 
 
@@ -59,50 +74,88 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tv_title=findViewById(R.id.tv_title);
-        tv_body=findViewById(R.id.tv_body);
+        setTitle("Chat App Firebase");
+
+        //Chat Message
+        //tv_title = findViewById(R.id.tv_title);
+        //tv_body = findViewById(R.id.tv_body);
         //tv_token=findViewById(R.id.tv_token);
-        et_message=findViewById(R.id.et_message);
-        btn_send=findViewById(R.id.btn_send);
 
-         recyclerView = findViewById(R.id.list_chat);
+        //Edit Text Box
+        et_message = findViewById(R.id.et_message);
 
-         recyclerView.setHasFixedSize(true);
-         linearLayoutManager = new LinearLayoutManager(this);
-         linearLayoutManager.setStackFromEnd(true);
-         recyclerView.setLayoutManager(linearLayoutManager);
+        //Button Send Message
+        btn_send = findViewById(R.id.btn_send);
 
+        //ListView
+//        listView = findViewById(R.id.listView);
+//        arrayAdapter = new ArrayAdapter<String>(this, R.layout.message_item, listMessage);
+//        listView.setAdapter(arrayAdapter);
+
+
+        //RecyclerView
+//        recyclerView = findViewById(R.id.rv_chat);
+//        linearLayoutManager = new LinearLayoutManager(this);
+//        linearLayoutManager.setStackFromEnd(true);
+//        linearLayoutManager.setSmoothScrollbarEnabled(false);
+//        recyclerView.setLayoutManager(linearLayoutManager);
+//        messageAdapter = new MessageAdapter(listMessage);
+//        recyclerView.setAdapter(messageAdapter);
 
         getDeviceToken();
         getDeviceTopic(Topics);
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("message");
+
+        myRef.setValue("Hello BICIS");
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String value = snapshot.getValue(String.class);
+                Log.d(TAG, "Value is: "  + value);
+            }
+
+            @Override
+            public void onCancelled( DatabaseError error) {
+
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String message = et_message.getText().toString();
-                et_message.setText("");
-                sendNotificationToUser(Topic, message);
+                if (message.length() > 0){
+                    listMessage.add(message);
+                    //arrayAdapter.add(message);
+                    sendNotificationToUser(Topic, message, "Judul", "ToT");
+                    et_message.setText("");
+                }
+
             }
         });
     }
 
-    private void sendNotificationToUser(String Topic, String message) {
-        MainModel mainModel = new MainModel(Topic, new Notification( message, "Ini Title"), new Data("idid"));
 
-        listMessage.add(new MainModel(Topic, new Notification( message, "LOL"),new Data("id")));
-        //messageAdapter = new MessageAdapter(getApplicationContext(), listMessage, new MessageAdapter.Onclick();
-        recyclerView.setAdapter(messageAdapter);
+    private void sendNotificationToUser(String Topic, String message, String title, String id) {
+        MainModel mainModel = new MainModel(Topic, new Notification(message, title), new Data(id));
+
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
         retrofit2.Call<ResponseBody> responseBodyCall = apiService.SendMessage(mainModel);
-
         responseBodyCall.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-
-                //tv_token.setText(mainModel.getToken());
-                //tv_title.setText(mainModel.getNotification().getTitle());
-                //tv_body.setText(mainModel.getNotification().getBody());
+                int index = 0;
+                //listMessage.add(mainModel);
+//                ArrayList<MainModel> Chatlist = new ArrayList<>();
+//                for (int i = 0; i < listMessage.size(); i++){
+//                    Chatlist.add(listMessage.get(i));
+//                }
+//                messageAdapter = new MessageAdapter(Chatlist);
+//                recyclerView.setAdapter(messageAdapter);
 
                 Log.d(TAG, "Successfully send notification");
             }
