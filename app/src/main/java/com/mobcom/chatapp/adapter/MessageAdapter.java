@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mobcom.chatapp.R;
 import com.mobcom.chatapp.model.MainModel;
+import com.mobcom.chatapp.model.Read;
 
 import org.w3c.dom.Text;
 
@@ -19,16 +20,16 @@ import java.util.List;
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
     private static final String TAG = "MessageAdapter";
-
-    private ArrayList<String> listMessage;
+    private String token;
+    private ArrayList<Read> listMessage;
 
     public class ViewHolder extends RecyclerView.ViewHolder  {
 
-        private final TextView tv_title,tv_body;
+        private final TextView tv_body;
         public ViewHolder(View v) {
             super(v);
 
-            tv_title = v.findViewById(R.id.tv_title);
+            //tv_title = v.findViewById(R.id.tv_title);
             tv_body = v.findViewById(R.id.tv_body);
 
 
@@ -40,8 +41,21 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     }
 
-    public MessageAdapter(ArrayList<String> listMessage ){
+//    class ViewHolderReceiver extends RecyclerView.ViewHolder{
+//
+//        TextView tv_body_receiver;
+//
+//        public ViewHolderReceiver(View v) {
+//            super(v);
+//
+//            tv_body_receiver = v.findViewById(R.id.tv_body_receiver);
+//        }
+//    }
+
+    public MessageAdapter(ArrayList<Read> listMessage, String token ){
+
         this.listMessage = listMessage;
+        this.token = token;
     }
 
 
@@ -57,8 +71,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
 
-        viewHolder.getTextView().setText(listMessage.get(position));
-        viewHolder.tv_title.setText(listMessage.get(position));
+        viewHolder.getTextView().setText(listMessage.get(position).getMessage());
+        //viewHolder.tv_title.setText(listMessage.get(position));
     }
 
     @Override

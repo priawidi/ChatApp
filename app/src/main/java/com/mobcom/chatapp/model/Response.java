@@ -8,6 +8,15 @@ public class Response {
     private String failure;
     private String canonical_ids;
     private Results results;
+    private Long message_id;
+
+    public Long getMessage_id() {
+        return message_id;
+    }
+
+    public void setMessage_id(Long message_id) {
+        this.message_id = message_id;
+    }
 
     public String getMulticast_id() {
         return multicast_id;

@@ -2,29 +2,34 @@ package com.mobcom.chatapp.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MainModel {
 
     @SerializedName("to")
-    private String token;
+    private String to;
 
     @SerializedName("notification")
     private Notification notification;
 
     @SerializedName("data")
-    private Data data;
+    private Map<String, String> data;
 
-    public MainModel(String token, Notification notification, Data data) {
-        this.token = token;
+
+    public MainModel(String to, Notification notification, Map<String, String> data) {
+        this.to = to;
         this.notification = notification;
         this.data = data;
+
     }
 
     public String getToken() {
-        return token;
+        return to;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setToken(String to) {
+        this.to = to;
     }
 
     public Notification getNotification() {
@@ -35,11 +40,11 @@ public class MainModel {
         this.notification = notification;
     }
 
-    public Data getData() {
+    public Map<String, String> getData() {
         return data;
     }
 
-    public void setData(Data data) {
+    public void setData(Map<String, String> data) {
         this.data = data;
     }
 }
