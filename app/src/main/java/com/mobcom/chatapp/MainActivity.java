@@ -29,6 +29,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -111,17 +112,19 @@ public class MainActivity extends AppCompatActivity  {
 
         apiService = ApiClient.getClient().create(ApiInterface.class);
 
+        myRef = FirebaseDatabase.getInstance("https://chatapp-10c9a-default-rtdb.asia-southeast1.firebasedatabase.app").getReference();
+
         getDeviceToken();
         getDeviceTopic(Topics);
+        getMessageFromUser();
 
-        myRef = FirebaseDatabase.getInstance("https://chatapp-10c9a-default-rtdb.asia-southeast1.firebasedatabase.app").getReference();
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String message = et_message.getText().toString();
                 if (message.length() > 0){
-                    sendMessageToUser(message);
+                    sendMessageToUser(et_message.getText().toString());
                     sendNotificationToUser(Topic, message, "Judul" );
                     et_message.setText("");
                 }
@@ -131,6 +134,50 @@ public class MainActivity extends AppCompatActivity  {
 
 
 
+    }
+
+    private void getMessageFromUser(){
+        Query messageTopic_query = myRef.child(Topic);
+        messageTopic_query.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
+                Log.d(TAG, "onChildAdded: ");
+                Read msg_topic = snapshot.getValue(Read.class);
+                msg_topic.setMessage_id(snapshot.getKey());
+
+                read.add(msg_topic);
+                for(int i = 0; i < read.size(); i++) {
+                    Log.d(TAG, "listMessage[" + i + "] = " + read.get(i));
+                }
+
+                messageAdapter = new MessageAdapter(read, token);
+                recyclerView.setAdapter(messageAdapter);
+                int position = messageAdapter.getItemCount()-1;
+                Log.d(TAG, "onChildAdded: adapter position" + position);
+                recyclerView.scrollToPosition(position);
+                messageAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot snapshot, String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot snapshot, String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
     }
 
     private void sendMessageToUser(String msg){
@@ -186,7 +233,7 @@ public class MainActivity extends AppCompatActivity  {
         data.put("message", msg);
         //data.put("timestamp", timestamp);
 
-        myRef.child("db_chat").child("chat").child(Topic).child(Long.toString(message_id)).setValue(data)
+        myRef.child(Topic).child(Long.toString(message_id)).setValue(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
