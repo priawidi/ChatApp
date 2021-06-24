@@ -2,11 +2,13 @@ package com.mobcom.chatapp;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
@@ -62,15 +64,14 @@ public class MainActivity extends AppCompatActivity  {
     private EditText et_message;
     private ImageButton btn_send;
     public String token = "", msg;
-    private String Topics = "Business";
+    private String Topics ;
     private String Topic = "/topics/" + Topics;
-    private String DeviceToken1 = "fe01yHY4SPqKgiY5nSucIW:APA91bEiwGGIIOYa00KAJR_EAecJK2gdupuHLPaPppKsb8sKQ7o4cidM_iYQAiFCuBZOibyBa469Ag5bcz1yDv4zgG8lj5-3SPXpQO3YeBiUMgFGu-Hp32hbV4yG15srwUk3_jcLWaKA";
-    private String DeviceToken2 = "dUHxvCJtRRCqJWygL3gHwD:APA91bHqfNTGsURctoauDpYrbAM0eSXnGgx7K_xSUQlmIV0USCoqHYBzgWJi01bWtC-WMbvVRFEX7abiKDKzYyfH2Yu3yKsCSMC3QWmsYzLUgw70ZzVa7P_e_b-FiCxWbMlb9avsfhHC";
+    private String DeviceToken1 = "cuPjhyGPSwK5jCs90DD6OB:APA91bESvh7UOhIKwbjLDDaD0p2AsJV3L14fVMQO_r32R3v_YCg4C-tdhsMElybADmWUSjt_V4_vMDoM8yYE80r39ENy_hvHuRdY8GLutEdLPRxfC41TDcM9x07QzkFA8hUDRBDo053X";
+    private String DeviceToken2 = "f1bKhjpyRZi7bbE0JvkdpG:APA91bGwzU-XM_8WEASfrW0fFJKQiEqv52fIelr6tEJZJwcuIs4GVG7igBOPnwdHpVOiE-DCQY2wxhbVnHbyBRmeHYB3rV8jD-q4RUNvGIjN2XGGEXyMb--c0jjKBEv3H7tNPlD8pmEV";
     private static final String TAG = "MainActivity";
     private MessageAdapter messageAdapter;
     private ApiInterface apiService;
     private DatabaseReference myRef;
-    Map Chat;
 
     ArrayList<Read> read = new ArrayList<>();
 
@@ -113,10 +114,9 @@ public class MainActivity extends AppCompatActivity  {
         apiService = ApiClient.getClient().create(ApiInterface.class);
 
         myRef = FirebaseDatabase.getInstance("https://chatapp-10c9a-default-rtdb.asia-southeast1.firebasedatabase.app").getReference();
-
+        request_topic();
         getDeviceToken();
-        getDeviceTopic(Topics);
-        getMessageFromUser();
+
 
 
         btn_send.setOnClickListener(new View.OnClickListener() {
@@ -124,133 +124,57 @@ public class MainActivity extends AppCompatActivity  {
             public void onClick(View v) {
                 String message = et_message.getText().toString();
                 if (message.length() > 0){
-                    sendMessageToUser(et_message.getText().toString());
-                    sendNotificationToUser(Topic, message, "Judul" );
+                    getMessageFromUser(Topics);
+                    //sendMessageToUser(et_message.getText().toString(), "ChatApp" );
+                    sendMessageNotificationToUser(Topic, message, "ChatApp" );
                     et_message.setText("");
+
+
+                    Toast.makeText(MainActivity.this, "Message Sent", Toast.LENGTH_SHORT).show();
                 }
+
 
             }
         });
 
-
-
     }
 
-    private void getMessageFromUser(){
-        Query messageTopic_query = myRef.child(Topic);
-        messageTopic_query.addChildEventListener(new ChildEventListener() {
+    private void getMessageFromUser(String Topic){
+        Log.d(TAG, "getMessageFromUser Initiated" + Topic);
+        Query query = myRef.child(Topic);
+        query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
-                Log.d(TAG, "onChildAdded: ");
-                Read msg_topic = snapshot.getValue(Read.class);
-                msg_topic.setMessage_id(snapshot.getKey());
+                Read msg_add = snapshot.getValue(Read.class);
+                msg_add.setMessage_id(snapshot.getKey());
 
-                read.add(msg_topic);
-                for(int i = 0; i < read.size(); i++) {
-                    Log.d(TAG, "listMessage[" + i + "] = " + read.get(i));
-                }
-
+                read.add(msg_add);
                 messageAdapter = new MessageAdapter(read, token);
                 recyclerView.setAdapter(messageAdapter);
                 int position = messageAdapter.getItemCount()-1;
-                Log.d(TAG, "onChildAdded: adapter position" + position);
                 recyclerView.scrollToPosition(position);
                 messageAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onChildChanged(DataSnapshot snapshot, String previousChildName) {
-
             }
 
             @Override
             public void onChildRemoved(DataSnapshot snapshot) {
-
             }
 
             @Override
             public void onChildMoved(DataSnapshot snapshot, String previousChildName) {
-
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
-
             }
         });
     }
 
-    private void sendMessageToUser(String msg){
-        String from = token;
-        String to = Topic;
-
-        HashMap<String, String> data = new HashMap<>();
-        data.put("From", from);
-        data.put("To", to);
-        data.put("Message", msg);
-
-        Notification notification = new Notification(msg, "Judul");
-
-        MainModel message = new MainModel(Topic, notification, data);
-
-        Call<Response> call = apiService.SendMessage(message);
-        call.enqueue(new Callback<Response>() {
-            @Override
-            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                if (!response.isSuccessful()) {
-                    Log.d(TAG, "Code: " + response.code());
-                    Log.d(TAG, "Message"+ response.toString());
-                    return;
-                }
-
-
-                Response sr = response.body();
-                Log.d("Sukses Kirim", Long.toString(sr.getMessage_id()));
-//                FirebaseDatabase database = FirebaseDatabase.getInstance();
-//                DatabaseReference myRef = database.getReference("message");
-//
-//                myRef.setValue("Hello, World!");
-
-                SendToDB(sr.getMessage_id(), from, to, msg);
-            }
-
-            @Override
-            public void onFailure(Call<Response> call, Throwable t) {
-
-            }
-        });
-
-    }
-
-    public void SendToDB(long message_id, String from, String to, String message) {
-        Log.d("DB CRUD", "Masuk Ke Fungsi SendToDB");
-
-
-        HashMap<String, Object> data = new HashMap<>();
-//        data.put("message_id", message_id);
-        data.put("from", from);
-        data.put("to", to);
-        data.put("message", msg);
-        //data.put("timestamp", timestamp);
-
-        myRef.child(Topic).child(Long.toString(message_id)).setValue(data)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.d("Write_DB", "Berhasil Menulis Ke DB");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("Write_DB", "Gagal Menulis Ke DB");
-                    }
-                });
-    }
-
-
-
-    private void sendNotificationToUser(String Topic, String message, String title) {
+    private void sendMessageNotificationToUser(String Topic, String message, String title) {
         String from = token;
         String to = Topic;
         HashMap<String, String> data = new HashMap<>();
@@ -263,11 +187,11 @@ public class MainActivity extends AppCompatActivity  {
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
         retrofit2.Call<Response> responseBodyCall = apiService.SendMessage(mainModel);
         responseBodyCall.enqueue(new Callback<Response>() {
-
             @Override
             public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-
                 Log.d(TAG, "Successfully send notification");
+
+                WriteToDB(response.body().getMessage_id(), from, to, message);
 
             }
 
@@ -278,6 +202,53 @@ public class MainActivity extends AppCompatActivity  {
         });
     }
 
+    public void WriteToDB(long message_id, String from, String to, String message) {
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("message_id", message_id);
+        data.put("from", from);
+        data.put("to", to);
+        data.put("message", message);
+
+        myRef.child(Topic).child(Long.toString(message_id)).setValue(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Log.d("Write_DB", "DB Sent");
+                Log.d("Write_DB_From", from);
+                Log.d("Write_DB_To", to);
+                Log.d("Write_DB_Message", message);
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Write_DB", "DB Failure");
+                    }
+                });
+    }
+
+    private void request_topic() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter Topic");
+        final EditText input_field = new EditText(this);
+        builder.setView(input_field);
+        builder.setPositiveButton("OK ", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Topics = "/topics/" + input_field.getText().toString();
+                getDeviceTopic(Topics);
+                getMessageFromUser(Topics);
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+                request_topic();
+            }
+        });
+        builder.show();
+    }
     private void getDeviceToken() {
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
             @Override
