@@ -8,13 +8,14 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="chatapp_bg">#FAF3E3</color>
-    <color name="chatapp_right">#30BCC9</color>
-    <color name="chatapp_left">#F9DA80</color>
+    <color name="chatapp_right">#F9F9F9</color>
+    <color name="chatapp_left">#5CB3FF</color>
     <color name="chat_textright">#FAF3E3</color>
     <color name="chat_textleft">#00262A</color>
     <color name="woodsmoke">#16161d</color>
     <color name="squirrel">#8f7d6b</color>
     <color name="pampas">#EAE4DC</color>
     <color name="sandstone">#736660</color>
+    <color name="wisp">#A9BADD</color>
 
 </resources>
