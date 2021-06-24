@@ -31,8 +31,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             //tv_title = v.findViewById(R.id.tv_title);
             tv_body_left = v.findViewById(R.id.tv_body_left);
             tv_name_left = v.findViewById(R.id.tv_name_left);
-
-
         }
 
         public TextView getTextViewLeft(){
@@ -49,11 +47,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private final TextView tv_body_right,tv_name_right;
         public ViewHolderRight(View v) {
             super(v);
-
             //tv_title = v.findViewById(R.id.tv_title);
             tv_body_right = v.findViewById(R.id.tv_body_right);
             tv_name_right = v.findViewById(R.id.tv_name_right);
-
 
         }
 
@@ -104,8 +100,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        String DeviceName1 = "";
-        String DeviceName2 = "";
 
 
         switch (viewHolder.getItemViewType()){
@@ -114,41 +108,14 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 viewHolderLeft.getTextViewLeft().setText(listMessage.get(position).getMessage());
                 Log.d(TAG, "CASE LEFT CHAT: " + token);
 
-                if(DeviceToken1 == token){
-                    Log.d(TAG, "CASE LEFT CHAT: " + DeviceName1);
-                    DeviceName1 = "LG";
-                    viewHolderLeft.getNameLeft().setText(DeviceName1);
-                    break;
-                }
-                else{
-                    Log.d(TAG, "CASE LEFT CHAT: " + DeviceName2);
-                    DeviceName2 = "Poco";
-                    viewHolderLeft.getNameLeft().setText(DeviceName2);
-                    break;
-                }
-
-
-
-
+                break;
 
             case 1 :
                 ViewHolderRight viewHolderRight = (ViewHolderRight) viewHolder;
                 viewHolderRight.getTextViewRight().setText(listMessage.get(position).getMessage());
                 Log.d(TAG, "CASE RIGHT CHAT: " + token);
-                if(DeviceToken2 == token){
-                    Log.d(TAG, "CASE Right CHAT: " + DeviceName2);
-                    DeviceName2 = "Poco";
-                    viewHolderRight.getNameRight().setText(DeviceName2);
-                    break;
 
-                }
-               else{
-                    Log.d(TAG, "CASE Right CHAT: " + DeviceName2);
-                    DeviceName1 = "LG";
-                    viewHolderRight.getNameRight().setText(DeviceName1);
-                    break;
-
-                }
+                break;
 
         }
     }
