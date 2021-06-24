@@ -2,11 +2,13 @@ package com.mobcom.chatapp;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 import com.mobcom.chatapp.adapter.MessageAdapter;
 import com.mobcom.chatapp.api.ApiClient;
 import com.mobcom.chatapp.api.ApiInterface;
@@ -34,8 +37,15 @@ import com.mobcom.chatapp.model.Notification;
 import com.mobcom.chatapp.model.Read;
 import com.mobcom.chatapp.model.Response;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -45,6 +55,7 @@ public class MainActivity extends AppCompatActivity  {
     private EditText et_message;
     private ImageButton btn_send;
     public String token = "", msg;
+    private String time;
     private String Topics = "Business";
     private String Topic = "/topics/" + Topics;
     private String DeviceToken1 = "fe01yHY4SPqKgiY5nSucIW:APA91bEiwGGIIOYa00KAJR_EAecJK2gdupuHLPaPppKsb8sKQ7o4cidM_iYQAiFCuBZOibyBa469Ag5bcz1yDv4zgG8lj5-3SPXpQO3YeBiUMgFGu-Hp32hbV4yG15srwUk3_jcLWaKA";
@@ -54,10 +65,14 @@ public class MainActivity extends AppCompatActivity  {
     private ApiInterface apiService;
     private DatabaseReference myRef;
 
+    RemoteMessage remoteMessage;
+    Map<String, String> Notif;
+
     ArrayList<Read> read = new ArrayList<>();
     RecyclerView recyclerView;
     LinearLayoutManager linearLayoutManager;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,9 +93,13 @@ public class MainActivity extends AppCompatActivity  {
 
         apiService = ApiClient.getClient().create(ApiInterface.class);
         myRef = FirebaseDatabase.getInstance("https://chatapp-10c9a-default-rtdb.asia-southeast1.firebasedatabase.app").getReference();
+
+
         getDeviceToken();
+        getDateTime();
         getDeviceTopic(Topics);
         getMessage(Topic);
+
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,13 +108,15 @@ public class MainActivity extends AppCompatActivity  {
                 if (message.length() > 0){
                     sendMessageNotificationToUser(Topic, message, "ChatApp" );
                     et_message.setText("");
+                    //FirebaseMessagingService();
+                    Toast.makeText(MainActivity.this, "Message Sent", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
     public void getMessage(String topic) {
         Log.d(TAG, "getMessage Initiated" + topic);
-        Query query =  myRef.child(topic);
+        Query query =  myRef.child(topic).orderByChild("time");
         query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
@@ -133,10 +154,12 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void WriteToDB(long message_id, String from, String to, String message) {
+
         HashMap<String, Object> data = new HashMap<>();
         data.put("from", from);
         data.put("to", to);
         data.put("message", message);
+        data.put("time", time);
 
         myRef.child(Topic).child(Long.toString(message_id)).setValue(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -146,6 +169,7 @@ public class MainActivity extends AppCompatActivity  {
                         Log.d("Write_DB From : ", from);
                         Log.d("Write_DB To : ", to);
                         Log.d("Write_DB Message : ", message);
+                        Log.d("Write_DB Time : ", time);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -165,6 +189,7 @@ public class MainActivity extends AppCompatActivity  {
         data.put("From", from);
         data.put("To", to);
         data.put("Message", message);
+        data.put("Time", time);
 
         MainModel mainModel = new MainModel(Topic, new Notification(message, title), data);
 
@@ -222,7 +247,25 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
-//    private String chat_msg;
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void getDateTime(){
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date currentTime = Calendar.getInstance().getTime();
+        time = fmt.format(currentTime);
+    }
+
+
+    private void FirebaseMessagingService(){
+        MyFirebaseMessagingService myFirebaseMessagingService = new MyFirebaseMessagingService();
+        myFirebaseMessagingService.onMessageReceived(remoteMessage);
+        Notif = remoteMessage.getData();
+        //tv_body = findViewById(R.id.test_view);
+        //tv_body.setText(Notif);
+
+    }
+
+
+    //    private String chat_msg;
 //    private void append_chat_conversatin(DataSnapshot dataSnapshot) {
 //        Iterator i = dataSnapshot.getChildren().iterator();
 //        while (i.hasNext())

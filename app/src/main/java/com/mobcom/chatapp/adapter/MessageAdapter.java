@@ -34,23 +34,16 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private final TextView tv_body_left, tv_name_left;
         public ViewHolderLeft(View v) {
             super(v);
-
             //tv_title = v.findViewById(R.id.tv_title);
             tv_body_left = v.findViewById(R.id.tv_body_left);
             tv_name_left = v.findViewById(R.id.tv_name_left);
-
         }
-
         public TextView getTv_body_left(){
             return tv_body_left;
         }
-        public TextView getTv_name_left(){
-            return tv_name_left;
+        public TextView getTv_name_left(){ return tv_name_left;
         }
-
-
     }
-
     public class ViewHolderRight extends RecyclerView.ViewHolder  {
 
         private final TextView tv_body_right, tv_name_right;
@@ -59,22 +52,12 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             //tv_title = v.findViewById(R.id.tv_title);
             tv_body_right = v.findViewById(R.id.tv_body_right);
             tv_name_right = v.findViewById(R.id.tv_name_right);
-
         }
-
         public TextView getTv_body_right(){
             return tv_body_right;
         }
-        public TextView getTv_name_right(){
-            return tv_name_right;
-        }
-
-
+        public TextView getTv_name_right(){ return tv_name_right; }
     }
-
-
-
-
 
     @NonNull
     @Override
@@ -105,23 +88,23 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return place;
     }
     private String getDeviceNameLeft(){
-        Log.d(TAG, "getDeviceName Left: "+ DeviceName);
-        Log.d(TAG, "getDeviceName: "+ token);
+        //Log.d(TAG, "getDeviceName Left: "+ DeviceName);
+        //Log.d(TAG, "getDeviceName: "+ token);
         if(!token.equals(DeviceToken1)){
-            return DeviceName = "LG";
+            return DeviceName = "Widi";
         }
         else{
-            return DeviceName = "Poco";
+            return DeviceName = "Annaaf";
         }
     }
     private String getDeviceNameRight(){
-        Log.d(TAG, "getDeviceName Right: "+ DeviceName);
-        Log.d(TAG, "getDeviceName: "+ token);
+        //Log.d(TAG, "getDeviceName Right: "+ DeviceName);
+        //Log.d(TAG, "getDeviceName: "+ token);
         if(token.equals(DeviceToken1)){
-            return DeviceName = "LG";
+            return DeviceName = "Widi";
         }
         else{
-            return DeviceName = "Poco";
+            return DeviceName = "Annaaf";
         }
     }
     @Override
@@ -133,8 +116,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 ViewHolderLeft viewHolderLeft = (ViewHolderLeft) viewHolder;
                 viewHolderLeft.getTv_body_left().setText(listMessage.get(position).getMessage());
                 viewHolderLeft.getTv_name_left().setText(getDeviceNameLeft());
-                Log.d(TAG, "CASE LEFT CHAT: " + token);
-                Log.d(TAG, "CASE LEFT CHAT: " + DeviceName);
+                //Log.d(TAG, "CASE LEFT CHAT: " + token);
+                //Log.d(TAG, "CASE LEFT CHAT: " + DeviceName);
 
                 break;
 
@@ -143,8 +126,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 viewHolderRight.getTv_body_right().setText(listMessage.get(position).getMessage());
                 viewHolderRight.getTv_name_right().setText(getDeviceNameRight());
 
-                Log.d(TAG, "CASE RIGHT CHAT: " + token);
-                Log.d(TAG, "CASE RIGHT CHAT: " + DeviceName);
+                //Log.d(TAG, "CASE RIGHT CHAT: " + token);
+                //Log.d(TAG, "CASE RIGHT CHAT: " + DeviceName);
 
                 break;
 
