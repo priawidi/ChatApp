@@ -13,7 +13,7 @@
         android:backgroundTint="@color/chatapp_right"
         android:elevation="1dp"
         app:cardCornerRadius="8dp"
-        app:contentPadding="16dp">
+        app:contentPadding="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,15 +24,17 @@
                 android:id="@+id/tv_name_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/chat_textright"
-                android:text="Name!" />
+                android:layout_marginBottom="4dp"
+                android:text="Name!"
+                android:textColor="@color/chat_textright" />
 
             <TextView
                 android:id="@+id/tv_body_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/chat_textright"
-                android:text="Lorem ipsum dolor blablablabla lorem ipsum!" />
+                android:maxWidth="280dp"
+                android:text="Lorem ipsum dolor blablablabla lorem ipsum!"
+                android:textColor="@color/chat_textright" />
 
         </LinearLayout>
 

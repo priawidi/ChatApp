@@ -8,15 +8,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import android.os.Bundle;
-import android.os.Message;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,15 +25,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
-import com.mobcom.chatapp.MyFirebaseMessagingService;
 import com.mobcom.chatapp.adapter.MessageAdapter;
 import com.mobcom.chatapp.api.ApiClient;
 import com.mobcom.chatapp.api.ApiInterface;
-import com.mobcom.chatapp.model.Data;
 import com.mobcom.chatapp.model.MainModel;
 import com.mobcom.chatapp.model.Notification;
 import com.mobcom.chatapp.model.Read;
@@ -46,13 +36,6 @@ import com.mobcom.chatapp.model.Response;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -70,17 +53,10 @@ public class MainActivity extends AppCompatActivity  {
     private MessageAdapter messageAdapter;
     private ApiInterface apiService;
     private DatabaseReference myRef;
-    Map Chat;
 
     ArrayList<Read> read = new ArrayList<>();
-
-    MyFirebaseMessagingService myFirebaseMessagingService;
-    ArrayAdapter<String> arrayAdapter;
     RecyclerView recyclerView;
     LinearLayoutManager linearLayoutManager;
-    ListView listView;
-    int position;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,23 +64,13 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_main);
 
         setTitle("Chat App Firebase");
-
         //Edit Text Box
         et_message = findViewById(R.id.et_message);
-
         //Button Send Message
         btn_send = findViewById(R.id.btn_send);
-
-//        //ListView
-//        listView = findViewById(R.id.listView);
-//        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listMessage);
-//        listView.setAdapter(arrayAdapter);
-
-
         //RecyclerView
         recyclerView = findViewById(R.id.rv_chat);
         recyclerView.setHasFixedSize(true);
-
         linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
         linearLayoutManager.setSmoothScrollbarEnabled(false);
@@ -121,56 +87,44 @@ public class MainActivity extends AppCompatActivity  {
             public void onClick(View v) {
                 String message = et_message.getText().toString();
                 if (message.length() > 0){
-                    sendNotificationToUser(Topic, message, "Judul" );
+                    sendMessageNotificationToUser(Topic, message, "ChatApp" );
                     et_message.setText("");
                 }
-
             }
         });
     }
     public void getMessage(String topic) {
-
-        Query message_topic_query =  myRef.child(topic);
-        message_topic_query.addChildEventListener(new ChildEventListener() {
+        Log.d(TAG, "getMessage Initiated" + topic);
+        Query query =  myRef.child(topic);
+        query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
-                Log.d("On Child Added", snapshot.getKey());
-                Read msg_topic = snapshot.getValue(Read.class);
-                msg_topic.setMessage_id(snapshot.getKey());
 
-                read.add(msg_topic);
-                for (int i = 0; i < read.size(); i++) {
-                    Log.d(TAG, "listMessage[" + i + "] = " + read.get(i));
-                }
+                Read msg_add = snapshot.getValue(Read.class);
+                msg_add.setMessage_id(snapshot.getKey());
+
+                read.add(msg_add);
                 messageAdapter = new MessageAdapter(read, token);
                 recyclerView.setAdapter(messageAdapter);
                 int position = messageAdapter.getItemCount()-1;
-                Log.d(TAG, "onChildAdded: adapter position" + position);
+
                 recyclerView.scrollToPosition(position);
                 messageAdapter.notifyDataSetChanged();
+                Log.d(TAG, "onChildAdded: Success");
 
-                /*String output = "";
-                for (int i = 0; i < readMessageTopics.size(); i++) {
-                    output += readMessageTopics.get(i).getMessage() + "-----" + readMessageTopics.get(i).getTimestamp() + "\n";
-                }
-                tv_db_read.setText(output);*/
             }
-
             @Override
             public void onChildChanged(DataSnapshot snapshot, String previousChildName) {
 
             }
-
             @Override
             public void onChildRemoved(DataSnapshot snapshot) {
 
             }
-
             @Override
             public void onChildMoved(DataSnapshot snapshot, String previousChildName) {
 
             }
-
             @Override
             public void onCancelled(DatabaseError error) {
 
@@ -178,10 +132,8 @@ public class MainActivity extends AppCompatActivity  {
         });
     }
 
-    public void SendToDB(long message_id, String from, String to, String message) {
-
+    public void WriteToDB(long message_id, String from, String to, String message) {
         HashMap<String, Object> data = new HashMap<>();
-
         data.put("from", from);
         data.put("to", to);
         data.put("message", message);
@@ -191,6 +143,9 @@ public class MainActivity extends AppCompatActivity  {
                     @Override
                     public void onSuccess(Void unused) {
                         Log.d("Write_DB", "Succeed");
+                        Log.d("Write_DB From : ", from);
+                        Log.d("Write_DB To : ", to);
+                        Log.d("Write_DB Message : ", message);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -203,7 +158,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
 
-    private void sendNotificationToUser(String Topic, String message, String title) {
+    private void sendMessageNotificationToUser(String Topic, String message, String title) {
         String from = token;
         String to = Topic;
         HashMap<String, String> data = new HashMap<>();
@@ -216,17 +171,18 @@ public class MainActivity extends AppCompatActivity  {
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
         retrofit2.Call<Response> responseBodyCall = apiService.SendMessage(mainModel);
         responseBodyCall.enqueue(new Callback<Response>() {
-
             @Override
             public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
 
                 Log.d(TAG, "Successfully send notification");
-                SendToDB(response.body().getMessage_id(), from, to, message);
+                WriteToDB(response.body().getMessage_id(), from, to, message);
+                Log.d(TAG, "Write message to DB");
+
             }
 
             @Override
             public void onFailure(Call<Response> call, Throwable t) {
-
+                Log.d(TAG, "FAILED SEND MESSAGE");
             }
         });
     }
@@ -278,7 +234,6 @@ public class MainActivity extends AppCompatActivity  {
 //
 //        }
 //    }
-
 //    private class Firebase extends FirebaseMessagingService{
 //
 //        public void onMessageReceived(RemoteMessage remoteMessage) {
