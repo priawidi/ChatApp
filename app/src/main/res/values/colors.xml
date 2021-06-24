@@ -7,4 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="chatapp_bg">#FAF3E3</color>
+    <color name="chatapp_right">#30BCC9</color>
+    <color name="chatapp_left">#F9DA80</color>
+    <color name="chat_textright">#FAF3E3</color>
+    <color name="chat_textleft">#00262A</color>
+
 </resources>

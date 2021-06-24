@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/chatapp_bg"
     tools:context=".MainActivity">
 
 
@@ -22,18 +23,33 @@
             android:layout_gravity="bottom"
             android:layout_alignParentBottom="true">
 
-            <EditText
-                android:id="@+id/et_message"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/btn_send"
-                android:hint="Enter your Message Here"
-                android:layout_centerVertical="true"/>
+                android:elevation="1dp"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="8dp"
+                app:contentPadding="8dp"
+                android:layout_toLeftOf="@id/btn_send">
+
+                <EditText
+                    android:id="@+id/et_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:layout_marginLeft="4dp"
+                    android:hint="Enter your Message Here"
+                    android:layout_centerVertical="true"/>
+
+            </androidx.cardview.widget.CardView>
 
             <ImageButton
                 android:id="@+id/btn_send"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="8dp"
                 android:background="@drawable/ic_baseline_send_24"
                 android:layout_alignParentRight="true"/>
 

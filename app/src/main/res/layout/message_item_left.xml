@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:layout_margin="4dp"
-        android:backgroundTint="@color/purple_200"
+        android:backgroundTint="@color/chatapp_left"
         android:elevation="1dp"
         app:cardCornerRadius="8dp"
         app:contentPadding="8dp">
@@ -25,12 +25,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
+                android:textColor="@color/chat_textleft"
                 android:text="Name!" />
 
             <TextView
                 android:id="@+id/tv_body_left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/chat_textleft"
                 android:maxWidth="280dp"
                 android:text="Messagsssssasdasdjaslkdajlskdsajldkalsdjsalkdjalsdkajsle!" />
 
