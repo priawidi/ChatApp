@@ -12,8 +12,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,15 +52,15 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity  implements AdapterView.OnItemSelectedListener{
 
     private TextView tv_title, tv_body, tv_token;
     private EditText et_message;
-    private ImageButton btn_send;
+    private ImageButton btn_send, btn_topic;
     public String token = "", msg;
     private String time;
-    private String Topics = "001";
-    private String Topic = "/topics/" + Topics;
+    private String Topics ;
+    private String Topic ;
     private String DeviceToken1 = "fe01yHY4SPqKgiY5nSucIW:APA91bEiwGGIIOYa00KAJR_EAecJK2gdupuHLPaPppKsb8sKQ7o4cidM_iYQAiFCuBZOibyBa469Ag5bcz1yDv4zgG8lj5-3SPXpQO3YeBiUMgFGu-Hp32hbV4yG15srwUk3_jcLWaKA";
     private String DeviceToken2 = "dUHxvCJtRRCqJWygL3gHwD:APA91bHqfNTGsURctoauDpYrbAM0eSXnGgx7K_xSUQlmIV0USCoqHYBzgWJi01bWtC-WMbvVRFEX7abiKDKzYyfH2Yu3yKsCSMC3QWmsYzLUgw70ZzVa7P_e_b-FiCxWbMlb9avsfhHC";
     private static final String TAG = "MainActivity";
@@ -65,9 +68,10 @@ public class MainActivity extends AppCompatActivity  {
     private ApiInterface apiService;
     private DatabaseReference myRef;
 
+    String [] TopicArray = {"001", "002", "003", "004", "005", "006", "007", "008"};
     RemoteMessage remoteMessage;
     Map<String, String> Notif;
-
+    Spinner spin;
     ArrayList<Read> read = new ArrayList<>();
     RecyclerView recyclerView;
     LinearLayoutManager linearLayoutManager;
@@ -83,6 +87,8 @@ public class MainActivity extends AppCompatActivity  {
         et_message = findViewById(R.id.et_message);
         //Button Send Message
         btn_send = findViewById(R.id.btn_send);
+        //Button Send Topic
+        //btn_topic = findViewById(R.id.btn_spinner);
         //RecyclerView
         recyclerView = findViewById(R.id.rv_chat);
         recyclerView.setHasFixedSize(true);
@@ -95,11 +101,30 @@ public class MainActivity extends AppCompatActivity  {
         myRef = FirebaseDatabase.getInstance("https://chatapp-10c9a-default-rtdb.asia-southeast1.firebasedatabase.app").getReference();
 
 
+        //Spinner Topic
+
+        spin = (Spinner) findViewById(R.id.spinner_topic);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, TopicArray);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spin.setAdapter(adapter);
+        spin.setOnItemSelectedListener(this);
+
         getDeviceToken();
         getDateTime();
-        getDeviceTopic(Topics);
-        getMessage(Topic);
 
+
+
+//        btn_topic.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Topics = spin.getSelectedItem().toString();
+//                Topic = "/topics/" + Topics;
+//                getDeviceTopic(Topics);
+//                read.clear();
+//                getMessage(Topic);
+//                Log.d(TAG, "onClick: "+ Topic);
+//            }
+//        });
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -254,13 +279,28 @@ public class MainActivity extends AppCompatActivity  {
         time = fmt.format(currentTime);
     }
 
-
     private void FirebaseMessagingService(){
         MyFirebaseMessagingService myFirebaseMessagingService = new MyFirebaseMessagingService();
         myFirebaseMessagingService.onMessageReceived(remoteMessage);
         Notif = remoteMessage.getData();
         //tv_body = findViewById(R.id.test_view);
         //tv_body.setText(Notif);
+
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Topics = spin.getSelectedItem().toString();
+        Topic = "/topics/" + Topics;
+        getDeviceTopic(Topics);
+        read.clear();
+        getMessage(Topic);
+        Log.d(TAG, "onClick: "+ Topic);
+        Toast.makeText(getApplicationContext(), "Selected Topic: "+TopicArray[position] ,Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
 
     }
 

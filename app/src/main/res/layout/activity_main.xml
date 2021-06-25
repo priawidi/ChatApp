@@ -7,52 +7,96 @@
     android:background="@drawable/bg"
     tools:context=".MainActivity">
 
+    <RelativeLayout
+        android:id="@+id/top_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_chat"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@id/msg_box"
-            tools:listitem="@layout/message_item_left"/>
-
-
-        <RelativeLayout
-            android:id="@+id/msg_box"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_alignParentBottom="true">
-
-            <androidx.cardview.widget.CardView
+            android:layout_margin="8dp"
+            android:elevation="1dp"
+            app:cardCornerRadius="8dp"
+            app:contentPadding="2dp">
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="1dp"
-                android:layout_margin="8dp"
-                app:cardCornerRadius="8dp"
-                app:contentPadding="8dp"
-                android:layout_toLeftOf="@id/btn_send">
+                android:orientation="vertical">
 
-                <EditText
-                    android:id="@+id/et_message"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:layout_gravity="center"
+                    android:text="Topic"/>
+
+                <Spinner
+                    android:id="@+id/spinner_topic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:layout_marginLeft="4dp"
-                    android:hint="Enter your Message Here"
-                    android:layout_centerVertical="true"/>
+                    android:textAlignment="center"
+                    android:layout_centerVertical="true" />
 
-            </androidx.cardview.widget.CardView>
 
-            <ImageButton
-                android:id="@+id/btn_send"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginRight="8dp"
-                android:background="@drawable/ic_baseline_send_24"
-                android:layout_alignParentRight="true"/>
+            </LinearLayout>
 
-        </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+
+
+    </RelativeLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_chat"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/msg_box"
+        android:layout_below="@id/top_spinner"
+        tools:listitem="@layout/message_item_left" />
+
+
+    <RelativeLayout
+        android:id="@+id/msg_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_toLeftOf="@id/btn_send"
+            android:elevation="1dp"
+            app:cardCornerRadius="8dp"
+            app:contentPadding="8dp">
+
+            <EditText
+                android:id="@+id/et_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:background="@color/white"
+                android:hint="Enter your Message Here" />
+
+        </androidx.cardview.widget.CardView>
+
+        <ImageButton
+            android:id="@+id/btn_send"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/ic_baseline_send_24" />
+
+    </RelativeLayout>
 
 </RelativeLayout>
