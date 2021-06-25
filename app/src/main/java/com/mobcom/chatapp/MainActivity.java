@@ -87,8 +87,6 @@ public class MainActivity extends AppCompatActivity  implements AdapterView.OnIt
         et_message = findViewById(R.id.et_message);
         //Button Send Message
         btn_send = findViewById(R.id.btn_send);
-        //Button Send Topic
-        //btn_topic = findViewById(R.id.btn_spinner);
         //RecyclerView
         recyclerView = findViewById(R.id.rv_chat);
         recyclerView.setHasFixedSize(true);
@@ -112,20 +110,6 @@ public class MainActivity extends AppCompatActivity  implements AdapterView.OnIt
         getDeviceToken();
         getDateTime();
 
-
-
-//        btn_topic.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Topics = spin.getSelectedItem().toString();
-//                Topic = "/topics/" + Topics;
-//                getDeviceTopic(Topics);
-//                read.clear();
-//                getMessage(Topic);
-//                Log.d(TAG, "onClick: "+ Topic);
-//            }
-//        });
-
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,7 +117,6 @@ public class MainActivity extends AppCompatActivity  implements AdapterView.OnIt
                 if (message.length() > 0){
                     sendMessageNotificationToUser(Topic, message, "ChatApp" );
                     et_message.setText("");
-                    //FirebaseMessagingService();
                     Toast.makeText(MainActivity.this, "Message Sent", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -152,9 +135,6 @@ public class MainActivity extends AppCompatActivity  implements AdapterView.OnIt
                 read.add(msg_add);
                 messageAdapter = new MessageAdapter(read, token);
                 recyclerView.setAdapter(messageAdapter);
-                int position = messageAdapter.getItemCount()-1;
-
-                recyclerView.scrollToPosition(position);
                 messageAdapter.notifyDataSetChanged();
                 Log.d(TAG, "onChildAdded: Success");
 
@@ -303,48 +283,5 @@ public class MainActivity extends AppCompatActivity  implements AdapterView.OnIt
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
-
-
-    //    private String chat_msg;
-//    private void append_chat_conversatin(DataSnapshot dataSnapshot) {
-//        Iterator i = dataSnapshot.getChildren().iterator();
-//        while (i.hasNext())
-//        {
-//            chat_msg = (String) ((DataSnapshot)i.next()).getValue();
-//
-//            tv_body.append(chat_msg +"\n");
-//
-//
-//        }
-//    }
-//    private class Firebase extends FirebaseMessagingService{
-//
-//        public void onMessageReceived(RemoteMessage remoteMessage) {
-//            final Map<String, String> ChatData;
-//            Log.d(TAG, "From: " + remoteMessage.getFrom());
-//            // Check if message contains a data payload.
-//            if (remoteMessage.getData().size() > 0) {
-//                ChatData = remoteMessage.getData();
-//                Log.d(TAG, "Message data payload: " + ChatData);
-//
-////            if (/* Check if data needs to be processed by long running job */ true) {
-////                // For long-running tasks (10 seconds or more) use WorkManager.
-////                scheduleJob();
-////            } else {
-////                // Handle message within 10 seconds
-////                handleNow();
-////            }
-//            Chat = ChatData;
-//            }
-//            // Check if message contains a notification payload.
-//            if (remoteMessage.getNotification() != null) {
-//                Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-//            }
-//
-//            // Also if you intend on generating your own notifications as a result of a received FCM
-//            // message, here is where that should be initiated. See sendNotification method below.
-//        }
-//
-//    }
 
 }

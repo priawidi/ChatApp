@@ -34,7 +34,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private final TextView tv_body_left, tv_name_left;
         public ViewHolderLeft(View v) {
             super(v);
-            //tv_title = v.findViewById(R.id.tv_title);
             tv_body_left = v.findViewById(R.id.tv_body_left);
             tv_name_left = v.findViewById(R.id.tv_name_left);
         }
@@ -49,7 +48,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private final TextView tv_body_right, tv_name_right;
         public ViewHolderRight(View v) {
             super(v);
-            //tv_title = v.findViewById(R.id.tv_title);
             tv_body_right = v.findViewById(R.id.tv_body_right);
             tv_name_right = v.findViewById(R.id.tv_name_right);
         }
